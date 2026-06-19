@@ -4,9 +4,11 @@ Copyright © 2026 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -38,7 +40,6 @@ Combine multiple commands into a single command and execute them in one go`,
 
 		taskName := args[0]
 		taskArgs := args[1:]
-
 		cfg, err := config.Load()
 		if err != nil {
 			fmt.Println("config error:", err)
@@ -51,15 +52,42 @@ Combine multiple commands into a single command and execute them in one go`,
 			return
 		}
 
+		requiredPlaceholders := placeholderIndices(commands)
 		required := maxPlaceholderIndex(commands)
 
-		if len(taskArgs) < required {
-			fmt.Printf("error: missing argument %d\n", len(taskArgs)+1)
+		// If no placeholders are used in any command, do not ask for interactive input.
+		if required == 0 {
+			processedCommands := make([]string, len(commands))
+			for i, command := range commands {
+				processedCommands[i] = applyArgs(command, taskArgs)
+			}
+
+			if err := runner.RunCommands(processedCommands); err != nil {
+				fmt.Println("error:", err)
+			}
 			return
 		}
 
-		processedCommands := make([]string, len(commands))
+		if len(taskArgs) == 0 && len(requiredPlaceholders) > 0 {
+			reader := bufio.NewReader(os.Stdin)
+			for _, index := range requiredPlaceholders {
+				promptCommand := placeholderCommandForIndex(commands, index)
+				fmt.Printf("Input task %d %s : ", index, promptCommand)
+				line, err := reader.ReadString('\n')
+				if err != nil {
+					fmt.Println("error reading input:", err)
+					return
+				}
+				taskArgs = append(taskArgs, strings.TrimSpace(line))
+			}
+		}
+		if len(taskArgs) < required {
 
+			fmt.Printf("error: missing argument %d\n", len(taskArgs)+1)
+			fmt.Printf("Please provide all of the required arguments or run the task again with no arguments.\n")
+			return
+		}
+		processedCommands := make([]string, len(commands))
 		for i, command := range commands {
 			processedCommands[i] = applyArgs(command, taskArgs)
 		}
@@ -122,4 +150,40 @@ func maxPlaceholderIndex(commands []string) int {
 	}
 
 	return maxIndex
+}
+
+func placeholderIndices(commands []string) []int {
+	re := regexp.MustCompile(`\{\{(\d+)\}\}`)
+	seen := map[int]struct{}{}
+
+	for _, cmd := range commands {
+		matches := re.FindAllStringSubmatch(cmd, -1)
+		for _, m := range matches {
+			if len(m) < 2 {
+				continue
+			}
+			n, err := strconv.Atoi(m[1])
+			if err != nil {
+				continue
+			}
+			seen[n] = struct{}{}
+		}
+	}
+
+	indices := make([]int, 0, len(seen))
+	for n := range seen {
+		indices = append(indices, n)
+	}
+	sort.Ints(indices)
+	return indices
+}
+
+func placeholderCommandForIndex(commands []string, index int) string {
+	placeholder := fmt.Sprintf("{{%d}}", index)
+	for _, command := range commands {
+		if strings.Contains(command, placeholder) {
+			return command
+		}
+	}
+	return ""
 }

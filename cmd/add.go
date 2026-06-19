@@ -52,7 +52,15 @@ var addCmd = &cobra.Command{
 		}
 		fmt.Println(Green + "Creating Task: " + taskName + Reset)
 		fmt.Println(Yellow + "Enter commands for the task (just press Enter on an empty line to finish):" + Reset)
-		fmt.Println(Yellow + "You can use placeholders like {{1}}, {{2}}, etc. for arguments. You can use like : " + Blue + `gpx [your command] "[argument1]" "[argument2]"` + Reset)
+		fmt.Printf(
+			"%sYou can use placeholders such as {{1}}, {{2}}, etc. for arguments.%s\n\n"+
+				"Example:\n"+
+				"%sgpx [your-command] \"[argument1]\" \"[argument2]\"%s\n\n"+
+				"%sIf required arguments are not provided, gpx will prompt you to enter them interactively.%s\n",
+			Yellow, Reset,
+			Blue, Reset,
+			Yellow, Reset,
+		)
 		var commands []string
 		for {
 			fmt.Printf(Blue+"Command #%d :"+Reset, len(commands)+1)
@@ -67,6 +75,10 @@ var addCmd = &cobra.Command{
 			}
 			commands = append(commands, line)
 		}
+		if len(commands) == 0 {
+			fmt.Println(Red + "Error: No commands provided. Task creation cancelled." + Reset)
+			return
+		}
 		fmt.Println()
 		fmt.Println("Task:", taskName)
 
@@ -75,6 +87,7 @@ var addCmd = &cobra.Command{
 		}
 
 		if !Confirm("Are you sure you want to add this task? [Y/n]: ") {
+			fmt.Println()
 			fmt.Println("Task creation cancelled.")
 			return
 		}

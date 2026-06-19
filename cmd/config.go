@@ -15,7 +15,7 @@ var configCmd = &cobra.Command{
 	Short: "Manage and configure commands. You can add or remove commands.",
 	Long:  `You can add or remove commands.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("config called")
+		fmt.Println("You can use 'gpx add <task>' to add a new task and 'gpx delete <task>' to delete an existing task.")
 	},
 }
 
