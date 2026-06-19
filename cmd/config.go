@@ -12,7 +12,7 @@ import (
 // configCmd represents the config command
 var configCmd = &cobra.Command{
 	Use:   "config",
-	Short: "Manage and configure commands",
+	Short: "Manage and configure commands. You can add or remove commands.",
 	Long:  `You can add or remove commands.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("config called")

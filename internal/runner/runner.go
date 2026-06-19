@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
 )
 
@@ -15,7 +16,13 @@ func RunCommands(commands []string) error {
 	// " && " で連結
 	joined := strings.Join(commands, " && ")
 	fmt.Println("> " + joined)
-	cmd := exec.Command("sh", "-c", joined)
+	var cmd *exec.Cmd
+	if runtime.GOOS == "windows" {
+		cmd = exec.Command("cmd", "/C", joined)
+	} else {
+		cmd = exec.Command("sh", "-c", joined)
+	}
+
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin

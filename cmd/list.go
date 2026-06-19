@@ -17,6 +17,13 @@ var listCmd = &cobra.Command{
 	Short: "Displays a list of registered commands",
 	Long:  `Displays a list of registered commands`,
 	Run: func(cmd *cobra.Command, args []string) {
+		const (
+			Reset  = "\033[0m"
+			Red    = "\033[31m"
+			Green  = "\033[32m"
+			Yellow = "\033[33m"
+			Blue   = "\033[34m"
+		)
 		cfg, err := config.Load()
 		if err != nil {
 			fmt.Println(err)
@@ -29,11 +36,11 @@ var listCmd = &cobra.Command{
 		}
 		sort.Strings(names)
 
-		fmt.Println("--- Available Tasks ---")
+		fmt.Printf(Green + "--- Available Tasks ---" + Reset + "\n")
 		for _, name := range names {
-			fmt.Println(name + ":")
+			fmt.Printf(Green+"%s:"+Reset+"\n", name)
 			for _, command := range cfg.Tasks[name] {
-				fmt.Println("  - " + command)
+				fmt.Printf(Blue+"  - %s"+Reset+"\n", command)
 			}
 		}
 	},
