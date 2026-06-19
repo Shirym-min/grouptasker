@@ -69,7 +69,7 @@ Pass arguments:
 gpx commit "Update README"
 ```
 
-Pass arguments in a dialogue format
+or Pass arguments in a dialogue format:
 
 ```bash
 gpx commit
@@ -97,8 +97,15 @@ gpx echo2 "Hi" "I'm Shirym-min!"
 or
 ```bash
 gpx echo2
->> Input task 1 echo {{2}} : Hi
->> Input task 2 echo {{3}} : I'm Shirym-min!
+>> Input task 1 echo {{1}} : Hi
+>> Input task 2 echo {{2}} : I'm Shirym-min!
+```
+
+↓
+
+```bash
+>>Hi
+>>I'm Shirym-min!
 ```
 
 ```yaml
@@ -126,10 +133,10 @@ Example:
 
 ```bash
 gpx config add
-Task name : addandcommit
-Command #1 : git add .
-Command #2 : git commit -m "{{1}}"
-Added Task
+>>Task name : addandcommit
+>>Command #1 : git add .
+>>Command #2 : git commit -m "{{1}}"
+>>Added Task
 ```
 
 Delete a task:
@@ -144,18 +151,7 @@ Example:
 gpx config delete commit
 ```
 
-Run:
 
-```bash
-gpx example hello world
-```
-
-Result:
-
-```text
-hello
-world
-```
 
 ## License
 
