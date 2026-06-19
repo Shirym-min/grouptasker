@@ -1,10 +1,11 @@
+/*
+Copyright © 2026 NAME HERE <EMAIL ADDRESS>
+
+*/
 package main
 
-import (
-	"fmt"
-	"os"
-)
+import "github.com/Shirym-min/grouptasker/cmd"
 
 func main() {
-	fmt.Println("args:", os.Args)
+	cmd.Execute()
 }

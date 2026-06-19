@@ -1,0 +1,10 @@
+tasks:
+    build:
+        - echo hello
+        - pwd
+    contest:
+        - echo contest
+        - ls
+    test:
+        - echo {{1}}
+        - echo {{2}}
